@@ -6,9 +6,9 @@ export const placeOrder = async (req, res) => {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "Unauthorized: user not found" });
     }
-    const { productId, productName, productPrice } = req.body;
+    const { productId, productName, productPrice ,productImage} = req.body;
 
-    if (!productId || !productName || !productPrice) {
+    if (!productId || !productName || !productPrice || !productImage) {
       return res.status(400).json({ message: "Missing product details" });
     }
 
@@ -17,15 +17,15 @@ export const placeOrder = async (req, res) => {
       productId,
       productName,
       productPrice,
+      productImage
     });
 
-    console.log("User:", req.user);
-    console.log("Body:", req.body);
+
 
     await order.save();
-    console.log("✅ Saved order has ID:", order._id); 
+
     req.app.get("io").emit("newOrder", order);
-    console.log("📢 Emitting newOrder to partners:", order);
+
     res.status(201).json(order);
   } catch (err) {
     console.error("❌ Order placement error:", err);
@@ -63,7 +63,7 @@ export const getPartnerOrders = async (req, res) => {
       $or: [{ status: "pending" }, { partnerId: req.user.id }],
     });
     res.json(orders);
-    console.log("Partner orders fetched:", orders);
+
   } catch (err) {
     res
       .status(500)
@@ -83,20 +83,16 @@ export const acceptOrder = async (req, res) => {
       return res.status(400).json({ message: "Order already accepted" });
     }
 
-    // ✅ Use getIO() instead of direct import
+
     const io = getIO();
     io.to(order._id.toString()).emit("orderStatusUpdate", {
       orderId: order._id,
       status: order.status,
     });
 
-    // io.emit("orderStatusUpdate", {
-    //   orderId: order._id,
-    //   status: order.status,
-    // });
+
     
-    console.log(`Broadcasted status update: ${order._id} => ${order.status}`);
-    console.log("Order accepted:", order);
+
 
     res.json(order);
   } catch (err) {

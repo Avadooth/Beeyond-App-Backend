@@ -6,22 +6,22 @@
   export const initSocket = (server) => {
     io = new Server(server, {
       cors: {
-        origin: "http://localhost:5173", // ✅ Frontend URL
+        origin: "http://localhost:5173", 
         methods: ["GET", "POST", "PATCH"],
         credentials: true,
       },
     });
 
     io.on("connection", (socket) => {
-      console.log("✅ Partner connected:", socket.id);
+
 
       socket.on("joinOrderRoom", ({ orderId }) => {
-        console.log("Joining room:", orderId);
+
         socket.join(orderId);
       });
       socket.on("newOrderPlaced", (order) => {
-        console.log("📦 New order placed:", order._id);
-        io.to(`partner_${partnerId}`).emit("newOrder", order); // broadcast to all connected delivery sockets
+
+        io.to(`partner_${partnerId}`).emit("newOrder", order); 
       });
 
       socket.on("updateOrderStatus", async ({ orderId, status }) => {
@@ -30,7 +30,7 @@
       });
 
       socket.on("disconnect", () => {
-        console.log("Client disconnected:", socket.id);
+        console.log("User disconnected");
       });
     });
 

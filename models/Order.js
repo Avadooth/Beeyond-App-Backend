@@ -15,6 +15,7 @@ const orderSchema = new mongoose.Schema(
     productId: { type: String, required: true }, // optional: ref: 'Product'
     productName: { type: String, required: true },
     productPrice: { type: Number, required: true },
+    productImage: { type: String, required: true },
     status: {
       type: String,
       enum: ["pending", "accepted", "picked-up", "on-the-way", "delivered"],
