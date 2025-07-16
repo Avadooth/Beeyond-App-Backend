@@ -1,29 +1,22 @@
-const User = require('../models/User');
-const Order = require('../models/Order');
+import Order from '../models/Order.js';
+import User from '../models/User.js';
 
-// GET /admin/users
-export const getAllUsers = async (req, res) => {
-    const users = await User.find().select('-password');
-    res.json(users);
-};
-
-// DELETE /admin/users/:id
-export const deleteUser = async (req, res) => {
-    await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'User deleted' });
-};
-
-// GET /admin/orders
 export const getAllOrders = async (req, res) => {
-    const orders = await Order.find().populate('customerId partnerId');
+  try {
+    const orders = await Order.find()
+      .populate('customerId', 'name email')
+      .populate('partnerId', 'name email');
     res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
+  }
 };
 
-// PATCH /admin/orders/:id
-export const updateOrderStatus = async (req, res) => {
-    const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
-    res.json(order);
+export const getAllPartners = async (req, res) => {
+  try {
+    const partners = await User.find({ role: 'partner' }).select('-password');
+    res.json(partners);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch partners', error: err.message });
+  }
 };
-
-export default { getAllUsers, deleteUser, getAllOrders, updateOrderStatus };
