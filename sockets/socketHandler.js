@@ -19,7 +19,7 @@
 
         socket.join(orderId);
       });
-      socket.on("newOrderPlaced", (order) => {
+      socket.on("newOrderPlaced", (order, partnerId) => {
 
         io.to(`partner_${partnerId}`).emit("newOrder", order); 
       });
