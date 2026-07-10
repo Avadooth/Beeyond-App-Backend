@@ -13,6 +13,8 @@ export const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
+    console.log("socket:", socket.id);
+
     socket.on("joinOrderRoom", ({ orderId }) => {
       socket.join(orderId);
     });

@@ -7,12 +7,18 @@ import adminRoutes from "./routes/adminRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 
 const app = express();
+console.log("🔥 NEW BACKEND VERSION RUNNING");
+
 connectDB();
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://beeyond-app-frontend.vercel.app",
 ];
+app.use((req, res, next) => {
+  console.log("REQUEST ORIGIN:", req.headers.origin);
+  next();
+});
 
 app.use(
   cors({
