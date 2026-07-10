@@ -1,22 +1,31 @@
-import express from "express"
-import cors from "cors"
-import connectDB from "./config/db.js"
-import orderRoutes from './routes/orderRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
-import productRoutes from './routes/productRoutes.js';
+import express from "express";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
 const app = express();
 connectDB();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://beeyond-app-frontend.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-app.get('/health', (_, res) => res.send('OK'));
-app.use('/api/admin', adminRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/orders', orderRoutes);
+app.get("/health", (_, res) => res.send("OK"));
+app.use("/api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
-
 
 export default app;
