@@ -6,7 +6,7 @@
   export const initSocket = (server) => {
     io = new Server(server, {
       cors: {
-        origin: "http://51.20.157.181", 
+        origin: "https://beeeyond-app-backend.onrender.com", 
         methods: ["GET", "POST", "PATCH"],
         credentials: true,
       },
