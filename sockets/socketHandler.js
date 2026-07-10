@@ -1,45 +1,44 @@
-  import { Server } from "socket.io";
-  import Order from "../models/Order.js";
+import { Server } from "socket.io";
+import Order from "../models/Order.js";
 
-  let io;
+let io;
 
-  export const initSocket = (server) => {
-    io = new Server(server, {
-      cors: {
-        origin: "https://beeeyond-app-backend.onrender.com", 
-        methods: ["GET", "POST", "PATCH"],
-        credentials: true,
-      },
+export const initSocket = (server) => {
+  io = new Server(server, {
+    cors: {
+      origin: [
+        "http://localhost:5173",
+        "https://beeyond-app-frontend.vercel.app",
+      ],
+      methods: ["GET", "POST", "PATCH"],
+      credentials: true,
+    },
+  });
+
+  io.on("connection", (socket) => {
+    socket.on("joinOrderRoom", ({ orderId }) => {
+      socket.join(orderId);
+    });
+    socket.on("newOrderPlaced", ({ order, partnerId }) => {
+      io.to(`partner_${partnerId}`).emit("newOrder", order);
     });
 
-    io.on("connection", (socket) => {
-
-
-      socket.on("joinOrderRoom", ({ orderId }) => {
-
-        socket.join(orderId);
-      });
-      socket.on("newOrderPlaced", ({ order, partnerId }) => {
-
-        io.to(`partner_${partnerId}`).emit("newOrder", order); 
-      });
-
-      socket.on("updateOrderStatus", async ({ orderId, status }) => {
-        await Order.findByIdAndUpdate(orderId, { status });
-        io.to(orderId).emit("orderStatusUpdate", { orderId, status });
-      });
-
-      socket.on("disconnect", () => {
-        console.log("User disconnected");
-      });
+    socket.on("updateOrderStatus", async ({ orderId, status }) => {
+      await Order.findByIdAndUpdate(orderId, { status });
+      io.to(orderId).emit("orderStatusUpdate", { orderId, status });
     });
 
-    return io;
-  };
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
+    });
+  });
 
-  export const getIO = () => {
-    if (!io) {
-      throw new Error("Socket.io not initialized yet");
-    }
-    return io;
-  };
+  return io;
+};
+
+export const getIO = () => {
+  if (!io) {
+    throw new Error("Socket.io not initialized yet");
+  }
+  return io;
+};
